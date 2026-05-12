@@ -1,4 +1,5 @@
 import { Canvas } from '@react-three/fiber';
+import * as THREE from 'three';
 import { Experience } from './components/Experience';
 import { useStore } from './store/store.js';
 import DefaultButton from './components/DefaultButton.jsx';
@@ -25,6 +26,12 @@ function App() {
                         className="touch-none"
                         gl={{ antialias: true, alpha: false }}
                         camera={{ position: [3, 3, 3], fov: 32, near: 0.1, far: 200 }}
+                        onCreated={({ gl }) => {
+                            gl.outputColorSpace = THREE.SRGBColorSpace;
+                            gl.toneMapping = THREE.ACESFilmicToneMapping;
+                            gl.toneMappingExposure = 1.05;
+                            gl.shadowMap.type = THREE.PCFSoftShadowMap;
+                        }}
                     >
                         <Experience />
                     </Canvas>

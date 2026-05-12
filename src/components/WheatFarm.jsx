@@ -11,6 +11,7 @@ import React, {useEffect, useRef} from 'react'
 import { useGLTF } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from "three";
+import { enableModelShadows } from '../utils/enableModelShadows.js';
 
 
 export function WheatFarm(props) {
@@ -30,6 +31,7 @@ export function WheatFarm(props) {
       const center = new THREE.Vector3();
       box.getCenter(center);
       modelRef.current.position.set(-center.x, -center.y, -center.z);
+      enableModelShadows(modelRef.current);
     }
   }, []);
 

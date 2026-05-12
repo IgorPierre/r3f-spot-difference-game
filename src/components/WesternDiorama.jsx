@@ -10,6 +10,7 @@ Title: Western Diorama - Low Poly
 import React, {useEffect, useRef} from 'react'
 import { useGLTF } from '@react-three/drei'
 import * as THREE from "three";
+import { enableModelShadows } from '../utils/enableModelShadows.js';
 
 export function WesternDiorama(props) {
   const { nodes, materials } = useGLTF('./models/western_diorama_-_low_poly.glb')
@@ -21,11 +22,12 @@ export function WesternDiorama(props) {
       const center = new THREE.Vector3();
       box.getCenter(center);
       modelRef.current.position.set(-center.x, -center.y, -center.z);
+      enableModelShadows(modelRef.current);
     }
   }, []);
 
   return (
-    <group {...props} dispose={null}>
+    <group ref={modelRef} {...props} dispose={null}>
       <group scale={0.0032}>
         <group rotation={[-Math.PI / 2, 0, 0]} scale={100}>
           <mesh geometry={nodes.Plane001_building_tan001_0.geometry} material={materials['building_tan.001']} />

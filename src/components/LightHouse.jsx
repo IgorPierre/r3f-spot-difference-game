@@ -11,6 +11,7 @@ import React, { useRef, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import { useStore } from '../store/store.js';
+import { enableModelShadows } from '../utils/enableModelShadows.js';
 import * as THREE from 'three';
 
 export function LightHouse(props) {
@@ -26,6 +27,7 @@ export function LightHouse(props) {
       const center = new THREE.Vector3();
       box.getCenter(center);
       modelRef.current.position.set(-center.x, -center.y, -center.z);
+      enableModelShadows(modelRef.current);
     }
   }, []);
 

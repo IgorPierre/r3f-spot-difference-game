@@ -7,14 +7,47 @@ Source: https://sketchfab.com/3d-models/western-diorama-low-poly-0824a6a99b71436
 Title: Western Diorama - Low Poly
 */
 
-import React, {useEffect, useRef} from 'react'
+import React, {useEffect, useRef, useMemo} from 'react'
 import { useGLTF } from '@react-three/drei'
+import { useFrame } from '@react-three/fiber'
 import * as THREE from "three";
 import { enableModelShadows } from '../utils/enableModelShadows.js';
+import { useStore } from '../store/store.js';
+import { writeWorldAnchor } from '../store/worldAnchors.js';
 
 export function WesternDiorama(props) {
   const { nodes, materials } = useGLTF('./models/western_diorama_-_low_poly.glb')
+  const { gameStarted, foundDifferences } = useStore();
   const modelRef = useRef();
+  const diffXRef = useRef();
+  const diffYRef = useRef();
+  const diffZRef = useRef();
+  const worldPos = useRef(new THREE.Vector3());
+
+  const matDiffTan = useMemo(() => materials['building_tan.001'].clone(), [materials]);
+  const matDiffPlant = useMemo(() => materials.PLANT.clone(), [materials]);
+  const matDiffBrown = useMemo(() => materials.building_brown.clone(), [materials]);
+
+  useEffect(() => {
+    [matDiffTan, matDiffPlant, matDiffBrown].forEach((m) => {
+      m.transparent = true;
+    });
+  }, [matDiffTan, matDiffPlant, matDiffBrown]);
+
+  useFrame(() => {
+    if (diffXRef.current) {
+      diffXRef.current.getWorldPosition(worldPos.current);
+      writeWorldAnchor('diffX', worldPos.current);
+    }
+    if (diffYRef.current) {
+      diffYRef.current.getWorldPosition(worldPos.current);
+      writeWorldAnchor('diffY', worldPos.current);
+    }
+    if (diffZRef.current) {
+      diffZRef.current.getWorldPosition(worldPos.current);
+      writeWorldAnchor('diffZ', worldPos.current);
+    }
+  });
 
   useEffect(() => {
     if (modelRef.current) {
@@ -79,12 +112,26 @@ export function WesternDiorama(props) {
         </group>
         <mesh geometry={nodes.Plane007_wood_dark_0.geometry} material={materials.wood_dark} rotation={[-Math.PI / 2, 0, 0]} scale={100} />
         <mesh geometry={nodes.Circle001_building_brown_0.geometry} material={materials.building_brown} rotation={[-Math.PI / 2, 0, 0]} scale={100} />
-        <mesh geometry={nodes.Icosphere003_building_tan001_0.geometry} material={materials['building_tan.001']} rotation={[-Math.PI / 2, 0, 0]} scale={100} />
+        <mesh
+            ref={diffXRef}
+            geometry={nodes.Icosphere003_building_tan001_0.geometry}
+            material={matDiffTan}
+            rotation={[-Math.PI / 2, 0, 0]}
+            scale={100}
+            material-opacity={gameStarted && !foundDifferences.includes('diffX') ? 0 : 1}
+        />
         <mesh geometry={nodes.Icosphere002_building_tan001_0.geometry} material={materials['building_tan.001']} rotation={[-Math.PI / 2, 0, 0]} scale={100} />
         <mesh geometry={nodes.Icosphere001_building_tan001_0.geometry} material={materials['building_tan.001']} rotation={[-Math.PI / 2, 0, 0]} scale={100} />
         <mesh geometry={nodes.Icosphere004_building_tan001_0.geometry} material={materials['building_tan.001']} rotation={[-Math.PI / 2, 0, 0]} scale={100} />
         <mesh geometry={nodes.Icosphere005_building_tan001_0.geometry} material={materials['building_tan.001']} rotation={[-Math.PI / 2, 0, 0]} scale={100} />
-        <mesh geometry={nodes.Plane016_PLANT_0.geometry} material={materials.PLANT} rotation={[-Math.PI / 2, 0, 0]} scale={100} />
+        <mesh
+            ref={diffYRef}
+            geometry={nodes.Plane016_PLANT_0.geometry}
+            material={matDiffPlant}
+            rotation={[-Math.PI / 2, 0, 0]}
+            scale={100}
+            material-opacity={gameStarted && !foundDifferences.includes('diffY') ? 0 : 1}
+        />
         <mesh geometry={nodes.Plane008_PLANT_0.geometry} material={materials.PLANT} rotation={[-Math.PI / 2, 0, 0]} scale={100} />
         <mesh geometry={nodes.Icosphere006_building_tan001_0.geometry} material={materials['building_tan.001']} rotation={[-Math.PI / 2, 0, 0]} scale={100} />
         <mesh geometry={nodes.Plane017_PLANT_0.geometry} material={materials.PLANT} rotation={[-Math.PI / 2, 0, 0]} scale={100} />
@@ -96,7 +143,14 @@ export function WesternDiorama(props) {
         <mesh geometry={nodes.Icosphere009_building_tan001_0.geometry} material={materials['building_tan.001']} rotation={[-Math.PI / 2, 0, 0]} scale={100} />
         <mesh geometry={nodes.Icosphere010_building_tan001_0.geometry} material={materials['building_tan.001']} rotation={[-Math.PI / 2, 0, 0]} scale={100} />
         <mesh geometry={nodes.Icosphere011_building_tan001_0.geometry} material={materials['building_tan.001']} rotation={[-Math.PI / 2, 0, 0]} scale={100} />
-        <mesh geometry={nodes.Circle005_building_brown_0.geometry} material={materials.building_brown} rotation={[-Math.PI / 2, 0, 0]} scale={100} />
+        <mesh
+            ref={diffZRef}
+            geometry={nodes.Circle005_building_brown_0.geometry}
+            material={matDiffBrown}
+            rotation={[-Math.PI / 2, 0, 0]}
+            scale={100}
+            material-opacity={gameStarted && !foundDifferences.includes('diffZ') ? 0 : 1}
+        />
         <mesh geometry={nodes.Icosphere012_building_tan001_0.geometry} material={materials['building_tan.001']} rotation={[-Math.PI / 2, 0, 0]} scale={100} />
         <mesh geometry={nodes.Icosphere013_building_tan001_0.geometry} material={materials['building_tan.001']} rotation={[-Math.PI / 2, 0, 0]} scale={100} />
         <mesh geometry={nodes.Icosphere014_building_tan001_0.geometry} material={materials['building_tan.001']} rotation={[-Math.PI / 2, 0, 0]} scale={100} />

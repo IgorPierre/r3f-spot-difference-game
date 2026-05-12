@@ -4,6 +4,7 @@ import { LightHouse } from './LightHouse';
 import { WheatFarm } from './WheatFarm';
 import { WesternDiorama } from './WesternDiorama';
 import { Environment, OrbitControls } from '@react-three/drei';
+import { ScenePointerPlacer, MarkersVisual } from './SceneMarkers.jsx';
 
 export const Experience = () => {
     const { selectedScene } = useStore();
@@ -48,9 +49,27 @@ export const Experience = () => {
                 maxDistance={22}
                 maxPolarAngle={Math.PI * 0.49}
             />
-            {selectedScene === 'LightHouse' && <LightHouse />}
-            {selectedScene === 'WheatFarm' && <WheatFarm />}
-            {selectedScene === 'WesternDiorama' && <WesternDiorama />}
+            {selectedScene === 'LightHouse' && (
+                <>
+                    <ScenePointerPlacer />
+                    <MarkersVisual />
+                    <LightHouse />
+                </>
+            )}
+            {selectedScene === 'WheatFarm' && (
+                <>
+                    <ScenePointerPlacer />
+                    <MarkersVisual />
+                    <WheatFarm />
+                </>
+            )}
+            {selectedScene === 'WesternDiorama' && (
+                <>
+                    <ScenePointerPlacer />
+                    <MarkersVisual />
+                    <WesternDiorama />
+                </>
+            )}
         </>
     );
 };

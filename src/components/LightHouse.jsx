@@ -12,13 +12,18 @@ import { useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import { useStore } from '../store/store.js';
 import { enableModelShadows } from '../utils/enableModelShadows.js';
+import { writeWorldAnchor } from '../store/worldAnchors.js';
 import * as THREE from 'three';
 
 export function LightHouse(props) {
   const { nodes, materials } = useGLTF('./models/low_poly_lighthouse_scene.glb');
-  const { gameStarted, foundDifferences, markDifferenceFound } = useStore();
+  const { gameStarted, foundDifferences } = useStore();
   const seaRef = useRef();
   const modelRef = useRef();
+  const diff1Ref = useRef();
+  const diff2Ref = useRef();
+  const diff3Ref = useRef();
+  const worldPos = useRef(new THREE.Vector3());
   let time = useRef(0);
 
   useEffect(() => {
@@ -36,14 +41,19 @@ export function LightHouse(props) {
       time.current += delta;
       seaRef.current.position.y = -380.538 + Math.sin(time.current * 1) * 3;
     }
-  });
-
-  const handleClick = (id) => {
-    if (!gameStarted) return;
-    if (!foundDifferences.includes(id)) {
-      markDifferenceFound(id);
+    if (diff1Ref.current) {
+      diff1Ref.current.getWorldPosition(worldPos.current);
+      writeWorldAnchor('diff1', worldPos.current);
     }
-  };
+    if (diff2Ref.current) {
+      diff2Ref.current.getWorldPosition(worldPos.current);
+      writeWorldAnchor('diff2', worldPos.current);
+    }
+    if (diff3Ref.current) {
+      diff3Ref.current.getWorldPosition(worldPos.current);
+      writeWorldAnchor('diff3', worldPos.current);
+    }
+  });
 
   return (
     <group ref={modelRef} {...props} dispose={null}>
@@ -54,9 +64,9 @@ export function LightHouse(props) {
           <mesh geometry={nodes.Circle_Material003_0.geometry} material={materials['Material.003']} />
           <mesh geometry={nodes.Circle_Material004_0.geometry} material={materials['Material.004']} />
           <mesh
+              ref={diff1Ref}
               geometry={nodes.Circle_Material001_0.geometry}
               material={materials['Material.001']}
-              onClick={() => handleClick('diff1')}
               material-transparent
               material-opacity={gameStarted && !foundDifferences.includes('diff1') ? 0 : 1}
           />
@@ -66,20 +76,20 @@ export function LightHouse(props) {
           <mesh geometry={nodes.Cube_Material008_0.geometry} material={materials['Material.008']} />
           <mesh geometry={nodes.Cube_Material005_0.geometry} material={materials['Material.005']} />
           <mesh
+              ref={diff2Ref}
               geometry={nodes.Cube_Material010_0.geometry}
               material={materials['Material.010']}
-              onClick={() => handleClick('diff2')}
               material-transparent
               material-opacity={gameStarted && !foundDifferences.includes('diff2') ? 0 : 1}
           />
         </group>
         <mesh geometry={nodes.Circle002__0.geometry} material={materials['Circle.002__0']} position={[160.969, 254.448, 169.454]} rotation={[-Math.PI / 2, 0, 0.777]} scale={100} />
         <mesh
+            ref={diff3Ref}
             geometry={nodes.Circle001_Light_0.geometry}
             material={materials.Light}
             position={[160.969, -238.164, 169.454]}
             rotation={[-Math.PI / 2, 0, 0]} scale={100}
-            onClick={() => handleClick('diff3')}
             material-transparent
             material-opacity={gameStarted && !foundDifferences.includes('diff3') ? 0 : 1}
         />

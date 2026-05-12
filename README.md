@@ -1,10 +1,19 @@
-# r3f-vite-starter
-A boilerplate to build R3F projects
+# Spot the Difference (3D)
 
+Jogo de “sete erros” em cena 3D: memorize o cenário, inicie o desafio e clique onde os objetos sumiram.
+
+Precisa do [Node.js](https://nodejs.org/) (18+). Use **npm** para instalar e rodar:
+
+```bash
+git clone https://github.com/IgorPierre/r3f-spot-difference-game.git
+cd r3f-spot-difference-game
+npm install
+npm run dev
 ```
-yarn
-yarn dev
-```
 
+Depois abra o link que aparecer no terminal (geralmente `http://localhost:5173`).
 
-![image](https://user-images.githubusercontent.com/6551176/221732091-23ee52cb-4150-42fa-b998-43628d7a6b0d.png)
+- `npm run build` — gera a versão de produção na pasta `dist`
+- `npm run preview` — serve essa build localmente para testar
+
+Não use Yarn neste projeto; o lockfile oficial é o `package-lock.json`.

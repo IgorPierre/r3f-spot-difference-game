@@ -7,18 +7,30 @@ Source: https://sketchfab.com/3d-models/wheat-farm-at-sunset-a324ba0bdf95402ba61
 Title: Wheat Farm At Sunset
 */
 
-import React, {useEffect, useRef} from 'react'
+import React, {useEffect, useRef, useMemo} from 'react'
 import { useGLTF } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from "three";
 import { enableModelShadows } from '../utils/enableModelShadows.js';
+import { useStore } from '../store/store.js';
 
 
 export function WheatFarm(props) {
   const { nodes, materials } = useGLTF('./models/wheat_farm_at_sunset.glb')
+  const { gameStarted, foundDifferences, markDifferenceFound } = useStore();
   const modelRef = useRef();
   /** Pás do moinho — animação só para dar vida à cena (não é um dos erros do jogo). */
   const windmillBladesRef = useRef();
+
+  const matDiffWheat = useMemo(() => materials.Wheat.clone(), [materials]);
+  const matDiffRocks = useMemo(() => materials.Rocks.clone(), [materials]);
+  const matDiffTiles = useMemo(() => materials.Tiles.clone(), [materials]);
+
+  useEffect(() => {
+    [matDiffWheat, matDiffRocks, matDiffTiles].forEach((m) => {
+      m.transparent = true;
+    });
+  }, [matDiffWheat, matDiffRocks, matDiffTiles]);
 
   useFrame((state, delta) => {
     const increment = 0.2 * delta;
@@ -34,6 +46,13 @@ export function WheatFarm(props) {
       enableModelShadows(modelRef.current);
     }
   }, []);
+
+  const handleClick = (id) => {
+    if (!gameStarted) return;
+    if (!foundDifferences.includes(id)) {
+      markDifferenceFound(id);
+    }
+  };
 
   return (
       <group ref={modelRef} {...props} dispose={null}>
@@ -67,7 +86,15 @@ export function WheatFarm(props) {
           <mesh geometry={nodes.Cube013_Rocks_0.geometry} material={materials.Rocks} position={[79.072, -3.309, 49.157]} rotation={[1.348, -0.271, -1.068]} scale={[8.108, 8.2, 11.808]} />
           <mesh geometry={nodes.Cube015_Rocks_0.geometry} material={materials.Rocks} position={[26.22, 14.461, -84.43]} rotation={[-1.296, -0.175, 1.998]} scale={[9.786, 9.896, 14.251]} />
           <mesh geometry={nodes.Cube016_Rocks_0.geometry} material={materials.Rocks} position={[-65.588, -1.141, 67.824]} rotation={[-1.791, 0.239, -0.955]} scale={[27.533, 22.934, 23.157]} />
-          <mesh geometry={nodes.Cube037_Wheat_0.geometry} material={materials.Wheat} position={[11.662, 19.227, -63.095]} rotation={[-1.608, -0.064, 1.024]} scale={[1.138, 1.138, 0.801]} />
+          <mesh
+            geometry={nodes.Cube037_Wheat_0.geometry}
+            material={matDiffWheat}
+            position={[11.662, 19.227, -63.095]}
+            rotation={[-1.608, -0.064, 1.024]}
+            scale={[1.138, 1.138, 0.801]}
+            onClick={() => handleClick('diffA')}
+            material-opacity={gameStarted && !foundDifferences.includes('diffA') ? 0 : 1}
+          />
           <mesh geometry={nodes.Plane004_Grass_0.geometry} material={materials.Grass} position={[61.058, 20.193, -96.876]} rotation={[-Math.PI / 2, 0, 0]} scale={[7.714, 7.714, 3.403]} />
           <mesh geometry={nodes.Plane006_Grass_0.geometry} material={materials.Grass} position={[65.67, 18.167, -91.206]} rotation={[-Math.PI / 2, 0.198, 0.55]} scale={[6.029, 5.995, 3.376]} />
           <mesh geometry={nodes.Plane007_Grass_0.geometry} material={materials.Grass} position={[77.245, 14.863, -105.161]} rotation={[-1.651, 0.029, 1.795]} scale={[6.096, 6.096, 2.689]} />
@@ -91,10 +118,26 @@ export function WheatFarm(props) {
           <mesh geometry={nodes.Plane025_Grass_0.geometry} material={materials.Grass} position={[-70.084, -2.715, 87.698]} rotation={[-1.6, 0.196, 0.699]} scale={[5.301, 5.27, 2.968]} />
           <mesh geometry={nodes.Plane026_Grass_0.geometry} material={materials.Grass} position={[-74.091, -3.752, 89.683]} rotation={[-1.68, -0.166, 3.104]} scale={[5.301, 5.27, 2.968]} />
           <mesh geometry={nodes.Plane027_Fence001_0.geometry} material={materials['Fence.001']} position={[76.254, 26.271, -64.811]} rotation={[-1.059, -0.052, -0.554]} scale={7.669} />
-          <mesh geometry={nodes.Cube007_Rocks_0.geometry} material={materials.Rocks} position={[92.728, 17.606, -79.801]} rotation={[1.733, 0.279, -1.609]} scale={[5.795, 5.861, 8.44]} />
+          <mesh
+            geometry={nodes.Cube007_Rocks_0.geometry}
+            material={matDiffRocks}
+            position={[92.728, 17.606, -79.801]}
+            rotation={[1.733, 0.279, -1.609]}
+            scale={[5.795, 5.861, 8.44]}
+            onClick={() => handleClick('diffB')}
+            material-opacity={gameStarted && !foundDifferences.includes('diffB') ? 0 : 1}
+          />
           <mesh geometry={nodes.Circle001_Balcony_0.geometry} material={materials.Balcony} position={[-41.401, 8.149, 28.668]} rotation={[-Math.PI / 2, 0, 0]} scale={40.43} />
           <mesh geometry={nodes.Cube027_WindmillWalls_0.geometry} material={materials.WindmillWalls} position={[-30.638, 102.498, 58.627]} rotation={[-Math.PI / 2, 0, -1.146]} scale={86.728} />
-          <mesh geometry={nodes.Cone_Tiles_0.geometry} material={materials.Tiles} position={[-41.401, 150.12, 28.668]} rotation={[-Math.PI / 2, 0, 0]} scale={55.784} />
+          <mesh
+            geometry={nodes.Cone_Tiles_0.geometry}
+            material={matDiffTiles}
+            position={[-41.401, 150.12, 28.668]}
+            rotation={[-Math.PI / 2, 0, 0]}
+            scale={55.784}
+            onClick={() => handleClick('diffC')}
+            material-opacity={gameStarted && !foundDifferences.includes('diffC') ? 0 : 1}
+          />
           <mesh geometry={nodes.Cube030_Tiles_0.geometry} material={materials.Tiles} position={[-40.439, 145.773, 39.037]} rotation={[-Math.PI / 2, 0, 0]} scale={100} />
           <mesh geometry={nodes.Cube031_Tiles_0.geometry} material={materials.Tiles} position={[-40.489, 122.915, 55.968]} rotation={[-1.099, 0, 0]} scale={129.27} />
           <mesh geometry={nodes.Cube008_WindowEmission_0.geometry} material={materials.WindowEmission} position={[-19.163, 95.496, 50.428]} rotation={[-Math.PI / 2, 0, 0.832]} scale={70.925} />

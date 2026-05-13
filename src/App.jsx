@@ -16,7 +16,7 @@ function App() {
 
     return (
         <div
-            className={`relative h-screen w-screen ${selectedScene ? '' : 'bg-gradient-to-t from-[#D5E5F2] to-[#3B82BF]'}`}
+            className={`relative h-screen w-screen overflow-y-auto ${selectedScene ? '' : 'bg-slate-200'}`}
             style={shellStyle}
         >
             <ToastContainer position="top-center" theme="colored" />

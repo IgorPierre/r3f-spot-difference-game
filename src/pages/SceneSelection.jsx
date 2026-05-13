@@ -16,8 +16,8 @@ export default function SceneSelection() {
                     Sete erros em 3D
                 </h1>
                 <p className="mt-3 text-base text-white/90 drop-shadow">
-                    Escolha um cenário, observe com calma e, ao iniciar o desafio, clique nos três lugares em que
-                    os objetos sumiram.
+                    Escolha um cenário e observe: a cada rodada <span className="font-semibold">três</span> objetos somem,
+                    sorteados entre <span className="font-semibold">cinco</span> possíveis — clique onde faltou algo.
                 </p>
             </div>
             <div className="flex w-full max-w-md flex-col gap-3">

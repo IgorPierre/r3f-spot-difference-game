@@ -7,19 +7,32 @@ Source: https://sketchfab.com/3d-models/low-poly-lighthouse-scene-7cbc357ed5ce44
 Title: Low Poly Lighthouse Scene
 */
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import { useStore } from '../store/store.js';
 import { enableModelShadows } from '../utils/enableModelShadows.js';
 import * as THREE from 'three';
 
+function isHidden(gameStarted, activeHiddenIds, foundDifferences, id) {
+  return gameStarted && activeHiddenIds.includes(id) && !foundDifferences.includes(id);
+}
+
 export function LightHouse(props) {
   const { nodes, materials } = useGLTF('./models/low_poly_lighthouse_scene.glb');
-  const { gameStarted, foundDifferences, markDifferenceFound } = useStore();
+  const { gameStarted, foundDifferences, activeHiddenIds, markDifferenceFound } = useStore();
   const seaRef = useRef();
   const modelRef = useRef();
-  let time = useRef(0);
+  const time = useRef(0);
+
+  const matRocksDiff = useMemo(() => materials.Rocks.clone(), [materials]);
+  const matSandDiff = useMemo(() => materials.Sand.clone(), [materials]);
+
+  useEffect(() => {
+    [matRocksDiff, matSandDiff].forEach((m) => {
+      m.transparent = true;
+    });
+  }, [matRocksDiff, matSandDiff]);
 
   useEffect(() => {
     if (modelRef.current) {
@@ -45,6 +58,8 @@ export function LightHouse(props) {
     }
   };
 
+  const h = (id) => (isHidden(gameStarted, activeHiddenIds, foundDifferences, id) ? 0 : 1);
+
   return (
     <group ref={modelRef} {...props} dispose={null}>
       <group scale={0.002}>
@@ -54,11 +69,11 @@ export function LightHouse(props) {
           <mesh geometry={nodes.Circle_Material003_0.geometry} material={materials['Material.003']} />
           <mesh geometry={nodes.Circle_Material004_0.geometry} material={materials['Material.004']} />
           <mesh
-              geometry={nodes.Circle_Material001_0.geometry}
-              material={materials['Material.001']}
-              onClick={() => handleClick('diff1')}
-              material-transparent
-              material-opacity={gameStarted && !foundDifferences.includes('diff1') ? 0 : 1}
+            geometry={nodes.Circle_Material001_0.geometry}
+            material={materials['Material.001']}
+            onClick={() => handleClick('diff1')}
+            material-transparent
+            material-opacity={h('diff1')}
           />
         </group>
         <group position={[231.662, -222.199, 244.591]} rotation={[-1.502, 0, 0.377]} scale={[55.009, 33.275, 33.275]}>
@@ -66,32 +81,41 @@ export function LightHouse(props) {
           <mesh geometry={nodes.Cube_Material008_0.geometry} material={materials['Material.008']} />
           <mesh geometry={nodes.Cube_Material005_0.geometry} material={materials['Material.005']} />
           <mesh
-              geometry={nodes.Cube_Material010_0.geometry}
-              material={materials['Material.010']}
-              onClick={() => handleClick('diff2')}
-              material-transparent
-              material-opacity={gameStarted && !foundDifferences.includes('diff2') ? 0 : 1}
+            geometry={nodes.Cube_Material010_0.geometry}
+            material={materials['Material.010']}
+            onClick={() => handleClick('diff2')}
+            material-transparent
+            material-opacity={h('diff2')}
           />
         </group>
         <mesh geometry={nodes.Circle002__0.geometry} material={materials['Circle.002__0']} position={[160.969, 254.448, 169.454]} rotation={[-Math.PI / 2, 0, 0.777]} scale={100} />
         <mesh
-            geometry={nodes.Circle001_Light_0.geometry}
-            material={materials.Light}
-            position={[160.969, -238.164, 169.454]}
-            rotation={[-Math.PI / 2, 0, 0]} scale={100}
-            onClick={() => handleClick('diff3')}
-            material-transparent
-            material-opacity={gameStarted && !foundDifferences.includes('diff3') ? 0 : 1}
+          geometry={nodes.Circle001_Light_0.geometry}
+          material={materials.Light}
+          position={[160.969, -238.164, 169.454]}
+          rotation={[-Math.PI / 2, 0, 0]}
+          scale={100}
+          onClick={() => handleClick('diff3')}
+          material-transparent
+          material-opacity={h('diff3')}
         />
-        <mesh geometry={nodes.Cube001_Rocks_0.geometry} material={materials.Rocks} position={[395.73, -418.676, 296.939]} rotation={[-0.854, 0.033, -3.104]} scale={172.239} />
+        <mesh
+          geometry={nodes.Cube001_Rocks_0.geometry}
+          material={matRocksDiff}
+          position={[395.73, -418.676, 296.939]}
+          rotation={[-0.854, 0.033, -3.104]}
+          scale={172.239}
+          onClick={() => handleClick('diff4')}
+          material-opacity={h('diff4')}
+        />
         <mesh geometry={nodes.Cube002_Rocks_0.geometry} material={materials.Rocks} position={[536.559, -447.358, 314.495]} rotation={[-2.255, -0.234, 0.277]} scale={117.564} />
         <mesh
-            ref={seaRef}
-            geometry={nodes.Sea_Material006_0.geometry}
-            material={materials['Material.006']}
-            position={[279.622, -380.538, 239.745]}
-            rotation={[-Math.PI / 2, 0, 0]}
-            scale={[16.328, 16.328, 17.851]}
+          ref={seaRef}
+          geometry={nodes.Sea_Material006_0.geometry}
+          material={materials['Material.006']}
+          position={[279.622, -380.538, 239.745]}
+          rotation={[-Math.PI / 2, 0, 0]}
+          scale={[16.328, 16.328, 17.851]}
         />
         <mesh geometry={nodes.Cube003_Rocks_0.geometry} material={materials.Rocks} position={[-63.345, -384.83, 280.083]} rotation={[-1.004, -0.284, -3.137]} scale={68.278} />
         <mesh geometry={nodes.Cube004_Rocks_0.geometry} material={materials.Rocks} position={[249.637, -390.33, 367.886]} rotation={[-2.554, 0.484, 0.12]} scale={[49.492, 61.971, 58.865]} />
@@ -99,7 +123,15 @@ export function LightHouse(props) {
         <mesh geometry={nodes.Cube006_Rocks_0.geometry} material={materials.Rocks} position={[226.152, -381.869, 5.03]} rotation={[2.633, -0.003, -2.722]} scale={[49.492, 61.971, 58.865]} />
         <mesh geometry={nodes.Cube007_Rocks_0.geometry} material={materials.Rocks} position={[501.83, -511.269, 456.531]} rotation={[-2.554, 0.484, 0.12]} scale={[12.83, 16.065, 15.26]} />
         <mesh geometry={nodes.Cube008_Rocks_0.geometry} material={materials.Rocks} position={[73.76, -538.511, 646.418]} rotation={[0.998, 0.314, 0.025]} scale={[26.493, 56.98, 48.993]} />
-        <mesh geometry={nodes.Sand_Sand_0.geometry} material={materials.Sand} position={[278.919, -638.272, 234.345]} rotation={[-Math.PI / 2, 0, 0]} scale={[16.238, 15.895, 19.928]} />
+        <mesh
+          geometry={nodes.Sand_Sand_0.geometry}
+          material={matSandDiff}
+          position={[278.919, -638.272, 234.345]}
+          rotation={[-Math.PI / 2, 0, 0]}
+          scale={[16.238, 15.895, 19.928]}
+          onClick={() => handleClick('diff5')}
+          material-opacity={h('diff5')}
+        />
         <mesh geometry={nodes.Cube009_Rocks_0.geometry} material={materials.Rocks} position={[514.453, -693.462, 579.682]} rotation={[2.616, -0.741, -2.151]} scale={[49.492, 61.971, 58.865]} />
         <mesh geometry={nodes.Cube010_Rocks_0.geometry} material={materials.Rocks} position={[731.944, -679.982, 380.359]} rotation={[0.44, 0.517, 1.135]} scale={[49.492, 61.971, 58.865]} />
         <mesh geometry={nodes.Cube011_Rocks_0.geometry} material={materials.Rocks} position={[195.337, -653.276, 487.151]} rotation={[2.757, -0.163, -1.843]} scale={[49.492, 61.971, 58.865]} />
@@ -115,7 +147,7 @@ export function LightHouse(props) {
         <mesh geometry={nodes.Cube021_Rocks_0.geometry} material={materials.Rocks} position={[-9.454, -510.926, 135.136]} rotation={[-2.037, 0.012, 0.963]} scale={172.239} />
       </group>
     </group>
-  )
+  );
 }
 
-useGLTF.preload('./models/low_poly_lighthouse_scene.glb')
+useGLTF.preload('./models/low_poly_lighthouse_scene.glb');

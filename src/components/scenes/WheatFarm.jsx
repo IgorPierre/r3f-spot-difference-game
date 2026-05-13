@@ -11,8 +11,8 @@ import React, {useEffect, useRef, useMemo} from 'react'
 import { useGLTF } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from "three";
-import { enableModelShadows } from '../utils/enableModelShadows.js';
-import { useStore } from '../store/store.js';
+import { enableModelShadows } from '../../utils/enableModelShadows.js';
+import { useStore } from '../../store/store.js';
 
 function isHidden(gameStarted, activeHiddenIds, foundDifferences, id) {
   return gameStarted && activeHiddenIds.includes(id) && !foundDifferences.includes(id);

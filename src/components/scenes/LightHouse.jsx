@@ -10,8 +10,8 @@ Title: Low Poly Lighthouse Scene
 import React, { useRef, useEffect, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
-import { useStore } from '../store/store.js';
-import { enableModelShadows } from '../utils/enableModelShadows.js';
+import { useStore } from '../../store/store.js';
+import { enableModelShadows } from '../../utils/enableModelShadows.js';
 import * as THREE from 'three';
 
 function isHidden(gameStarted, activeHiddenIds, foundDifferences, id) {

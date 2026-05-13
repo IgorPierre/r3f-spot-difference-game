@@ -1,8 +1,8 @@
 import { useLayoutEffect, useRef } from 'react';
 import { useStore } from '../store/store.js';
-import { LightHouse } from './LightHouse';
-import { WheatFarm } from './WheatFarm';
-import { WesternDiorama } from './WesternDiorama';
+import { LightHouse } from './scenes/LightHouse';
+import { WheatFarm } from './scenes/WheatFarm';
+import { WesternDiorama } from './scenes/WesternDiorama';
 import { Environment, OrbitControls } from '@react-three/drei';
 import { getAtmosphere } from '../constants/sceneAtmosphere.js';
 

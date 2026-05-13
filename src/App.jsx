@@ -6,14 +6,19 @@ import DefaultButton from './components/DefaultButton.jsx';
 import SceneSelection from './pages/SceneSelection.jsx';
 import GameOverlay from './components/GameOverlay.jsx';
 import { ToastContainer } from 'react-toastify';
+import { getAtmosphere } from './constants/sceneAtmosphere.js';
 
 function App() {
     const { startGame, gameStarted, selectedScene } = useStore();
 
     const primaryLabel = gameStarted ? 'Reiniciar rodada' : 'Iniciar desafio';
+    const shellStyle = selectedScene ? { background: getAtmosphere(selectedScene).shellGradient } : undefined;
 
     return (
-        <div className="relative h-screen w-screen bg-gradient-to-t from-[#D5E5F2] to-[#3B82BF]">
+        <div
+            className={`relative h-screen w-screen ${selectedScene ? '' : 'bg-gradient-to-t from-[#D5E5F2] to-[#3B82BF]'}`}
+            style={shellStyle}
+        >
             <ToastContainer position="top-center" theme="colored" />
             {!selectedScene ? (
                 <SceneSelection />

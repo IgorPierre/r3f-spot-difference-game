@@ -4,10 +4,12 @@ import { LightHouse } from './LightHouse';
 import { WheatFarm } from './WheatFarm';
 import { WesternDiorama } from './WesternDiorama';
 import { Environment, OrbitControls } from '@react-three/drei';
+import { getAtmosphere } from '../constants/sceneAtmosphere.js';
 
 export const Experience = () => {
     const { selectedScene } = useStore();
     const sunRef = useRef(null);
+    const atm = getAtmosphere(selectedScene);
 
     useLayoutEffect(() => {
         const light = sunRef.current;
@@ -25,16 +27,16 @@ export const Experience = () => {
 
     return (
         <>
-            <color attach="background" args={['#87b8e8']} />
-            {/* IBL: materiais PBR (glTF) ganham reflexos e “volume” como no Sketchfab */}
-            <Environment preset="park" environmentIntensity={0.65} />
-            <hemisphereLight args={['#d4ecff', '#3d3530', 0.42]} />
-            <ambientLight intensity={0.18} />
+            <color attach="background" args={[atm.background]} key={selectedScene} />
+            <Environment preset={atm.envPreset} environmentIntensity={atm.envIntensity} key={`${selectedScene}-env`} />
+            <hemisphereLight args={atm.hemisphere} />
+            <ambientLight intensity={atm.ambientIntensity ?? 0.18} />
             <directionalLight
                 ref={sunRef}
                 castShadow
-                position={[12, 22, 14]}
-                intensity={1.9}
+                position={atm.sunPosition}
+                color={atm.sunColor}
+                intensity={atm.sunIntensity}
                 shadow-mapSize={[2048, 2048]}
                 shadow-bias={-0.00028}
                 shadow-normalBias={0.035}
